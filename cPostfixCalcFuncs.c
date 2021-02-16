@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <ctype.h>
+#include <string.h>
 #include <stdlib.h>
 #include "cPostfixCalc.h"
 
@@ -14,6 +16,7 @@ long addPositive(long a, long b) {
 }
 
 /*
+
  * fatalError - print an error message an exit with an exit code of 1.
  * Prints a message of the form "Error: <message text>" to standard output.
  * Does not return!
@@ -23,6 +26,7 @@ long addPositive(long a, long b) {
  */
 void fatalError(const char *msg) {
   /* TODO: implement */
+  printf("Error: %s\n", msg);
 }
 
 /*
@@ -40,6 +44,11 @@ void fatalError(const char *msg) {
  */
 int isSpace(int c) {
   /* TODO: implement */
+  // isspace checks for all white space and returns non zero if true
+  if (isspace(c) != 0) {
+    return 1;
+  }
+  return 0;
 }
 
 /*
@@ -54,6 +63,11 @@ int isSpace(int c) {
  */
 int isDigit(int c) {
   /* TODO: implement */
+  //isdigit returns non zero int if digit
+  if (isdigit(c) != 0) {
+    return 1;
+  }
+  return 0;
 }
 
 /*
@@ -70,6 +84,15 @@ int isDigit(int c) {
  */
 const char *skipws(const char *s) {
   /* TODO: implement */
+  char *temp = malloc(sizeof(s));
+  for (int i = 0; i < (int) strlen(s); i++) {
+    if (isSpace(s[i]) == 0) {
+      strncpy(temp, s + i, strlen(s) - i);
+      return temp;
+    }
+  }
+  free(temp);
+  return NULL;
 }
 
 /*
