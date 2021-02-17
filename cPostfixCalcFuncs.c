@@ -84,14 +84,13 @@ int isDigit(int c) {
  */
 const char *skipws(const char *s) {
   /* TODO: implement */
-  char *temp = malloc(sizeof(s));
+ 
   for (int i = 0; i < (int) strlen(s); i++) {
     if (isSpace(s[i]) == 0) {
-      strncpy(temp, s + i, strlen(s) - i);
-      return temp;
+      return s + i;
     }
   }
-  free(temp);
+  
   return NULL;
 }
 
@@ -113,16 +112,18 @@ int tokenType(const char *s) {
     digit = isDigit(s[i++]);
   }
 
-  char n[i];
+  char *n = (char *) calloc(i, sizeof(char) + 1);
   memcpy(n, s, i);
 
   if(strcmp(n, "+") == 0 || strcmp(n, "-") == 0 
   || strcmp(n, "*") == 0 || strcmp(n, "/") == 0) {
+    free(n);
     return TOK_OP;
   } else if(digit == 1) {
+    free(n);
     return TOK_INT;
   }
-
+  free(n);
   return TOK_UNKNOWN;
 }
 
@@ -148,10 +149,10 @@ const char *consumeInt(const char *s, long *pval) {
     i++;
   }
 
-  char num[i];
+  char *num = (char *) calloc(i + 1, sizeof(char));
   memcpy(num, s, i);
   *pval = (long)atoi(num);
-
+  free(num);
   return (s + i);
 }
 
@@ -191,9 +192,10 @@ const char *consumeOp(const char *s, int *op) {
  */
 void stackPush(long stack[], long *count, long val) {
   /* TODO: implement */
-  if ( *count == MAX_STACK) {
+  if (*count - 1 >= MAX_STACK) {
     fatalError("Stack is full, cannot push!");
   } else {
+    //    printf("stacking \n");
     stack[*count] = val;
     *count += 1UL;
   }
