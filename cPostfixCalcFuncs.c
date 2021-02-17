@@ -108,7 +108,22 @@ const char *skipws(const char *s) {
  */
 int tokenType(const char *s) {
   /* TODO: implement */
+  int i = 0, digit = -1;
+  while(i < (int)strlen(s) && 1 != isSpace(s[i])) {
+    digit = isDigit(s[i++]);
+  }
 
+  char n[i];
+  memcpy(n, s, i);
+
+  if(strcmp(n, "+") == 0 || strcmp(n, "-") == 0 
+  || strcmp(n, "*") == 0 || strcmp(n, "/") == 0) {
+    return TOK_OP;
+  } else if(digit == 1) {
+    return TOK_INT;
+  }
+
+  return TOK_UNKNOWN;
 }
 
 /*
@@ -129,11 +144,11 @@ int tokenType(const char *s) {
 const char *consumeInt(const char *s, long *pval) {
   /* TODO: implement */
   int i = 0;
-  while(i < (int)strlen(s) && 1 == isDigit(s[i])) {
+  while(i < (int)strlen(s) && 1 != isSpace(s[i])) {
     i++;
   }
 
-  char* num[i];
+  char num[i];
   memcpy(num, s, i);
   *pval = (long)atoi(num);
 
@@ -201,7 +216,6 @@ void stackPush(long stack[], long *count, long val) {
  */
 long stackPop(long stack[], long *count) {
   /* TODO: implement */
-  long val;
   if ( *count == 0UL) {
     fatalError("Stack is empty, cannot pop!");
   } else {
@@ -232,5 +246,5 @@ long evalOp(int op, long left, long right) {
     default: return left / right; break;
   }
 
-  return 0UL;
+  //return 0UL;
 }
