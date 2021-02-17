@@ -26,7 +26,7 @@ long addPositive(long a, long b) {
  */
 void fatalError(const char *msg) {
   /* TODO: implement */
-  printf("Error: %s\n", msg);
+  printf("\nError: %s\n", msg);
 }
 
 /*
@@ -108,6 +108,7 @@ const char *skipws(const char *s) {
  */
 int tokenType(const char *s) {
   /* TODO: implement */
+
 }
 
 /*
@@ -127,6 +128,16 @@ int tokenType(const char *s) {
  */
 const char *consumeInt(const char *s, long *pval) {
   /* TODO: implement */
+  int i = 0;
+  while(i < (int)strlen(s) && 1 == isDigit(s[i])) {
+    i++;
+  }
+
+  char* num[i];
+  memcpy(num, s, i);
+  *pval = (long)atoi(num);
+
+  return (s + i);
 }
 
 /*
@@ -143,6 +154,8 @@ const char *consumeInt(const char *s, long *pval) {
  */
 const char *consumeOp(const char *s, int *op) {
   /* TODO: implement */
+  *op = s[0];
+  return s + 1;
 }
 
 /*
@@ -163,6 +176,13 @@ const char *consumeOp(const char *s, int *op) {
  */
 void stackPush(long stack[], long *count, long val) {
   /* TODO: implement */
+  if ( *count == MAX_STACK) {
+    fatalError("Stack is full, cannot push!");
+  } else {
+    stack[*count] = val;
+    *count += 1UL;
+  }
+
 }
 
 /*
@@ -181,6 +201,15 @@ void stackPush(long stack[], long *count, long val) {
  */
 long stackPop(long stack[], long *count) {
   /* TODO: implement */
+  long val;
+  if ( *count == 0UL) {
+    fatalError("Stack is empty, cannot pop!");
+  } else {
+    *count -= 1UL;
+    return stack[*count];
+  }
+
+  return 0L; //may cause issues later
 }
 
 /*
@@ -196,4 +225,12 @@ long stackPop(long stack[], long *count) {
  */
 long evalOp(int op, long left, long right) {
   /* TODO: implement */
+  switch(op) {
+    case '+': return left + right; break;
+    case '-': return left - right; break;
+    case '*': return left * right; break;
+    default: return left / right; break;
+  }
+
+  return 0UL;
 }
