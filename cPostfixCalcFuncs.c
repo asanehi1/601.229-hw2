@@ -27,6 +27,7 @@ long addPositive(long a, long b) {
 void fatalError(const char *msg) {
   /* TODO: implement */
   printf("\nError: %s\n", msg);
+  exit(1);
 }
 
 /*
@@ -192,7 +193,7 @@ const char *consumeOp(const char *s, int *op) {
  */
 void stackPush(long stack[], long *count, long val) {
   /* TODO: implement */
-  if (*count - 1 >= MAX_STACK) {
+  if (*count == MAX_STACK) {
     fatalError("Stack is full, cannot push!");
   } else {
     //    printf("stacking \n");
@@ -219,6 +220,7 @@ void stackPush(long stack[], long *count, long val) {
 long stackPop(long stack[], long *count) {
   /* TODO: implement */
   if ( *count == 0UL) {
+    free(stack);
     fatalError("Stack is empty, cannot pop!");
   } else {
     *count -= 1UL;

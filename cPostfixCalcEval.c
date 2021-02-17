@@ -37,10 +37,12 @@ long eval(const char *s) {
     }
   }
   if (counter != 1) {
-    char * msg = "multiple items on stack";
-    fatalError(msg);
+    free(stack);
+    fatalError("multiple items on stack");
   } else {
-    return stackPop(stack, &counter);
+    long final = stackPop(stack, &counter);
+    free(stack);
+    return final;
   }
   /* Note: this function should be implemented by calling functions
    * declared in cPostfixCalc.h and defined in cPostfixCalcFuncs.c
