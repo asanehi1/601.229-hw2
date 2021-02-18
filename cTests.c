@@ -50,6 +50,7 @@ void testPop(TestObjs *objs);
 void testEvalOp(TestObjs *objs);
 void testEval(TestObjs *objs);
 void testEvalInvalid(TestObjs *objs);
+void testUnusualWS(TestObjs *objs);
 
 /* set to nonzero if a call to exit is expected */
 int expectedExit;
@@ -114,7 +115,7 @@ int main(int argc, char **argv) {
 	TEST(testEvalOp);
 	TEST(testEval);
 	TEST(testEvalInvalid);
-
+	TEST(testUnusualWS);
 	TEST_FINI();
 }
 
@@ -183,7 +184,9 @@ void testSkipws(TestObjs *objs) {
 	ASSERT(0 == strcmp("abc", skipws("\tabc")));
 	ASSERT(0 == strcmp("abc", skipws("     abc")));
 	ASSERT(0 == strcmp("abc", skipws("\t\t\t\tabc")));
+
 	ASSERT(0 == strcmp("abc", skipws(" \tabc")));
+
 }
 
 void testTokenType(TestObjs *objs) {
@@ -301,4 +304,15 @@ void testEvalInvalid(TestObjs *objs) {
 		/* good, expected failure */
 		printf("good, stack underflow handled...");
 	}
+}
+
+void testUnusualWS(TestObjs *objs) {
+  ASSERT(6L == eval("  1  \t 5\t\t + \t"));
+  ASSERT(6L == eval("  1  \t 5\t\t + \t \t \t \t \t \t                          ")); 
+  ASSERT(6L == eval("  1  \t 5\t\t + \t \t \t \t \t \t                          "));
+  ASSERT(7L == eval("  1  \t 5\t\t 1        ++ \t \t \t \t \t \t                          "));
+  ASSERT(-5L == eval("  1  \t 5\t\t 1        +- \t \t \t \t \t \t                          "));
+  //ASSERT(2L == (eval("1 1+")));
+  ASSERT(2L == (eval("1 1 1 1 + ** ")));
+  //ASSERT(2L == (eval("1 1 1 1+--")));
 }

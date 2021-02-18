@@ -21,20 +21,22 @@ long eval(const char *s) {
   long counter = 0;
   long *stack = (long *) malloc(sizeof(long) * MAX_STACK);
   while (s && strlen(s) > 0) {
-    if (isSpace(s[0]) != 0) {
-      s = skipws(s);
-    } else if (isDigit(s[0])) {
+    if (TOK_INT == tokenType(s)) {
       long pval;
       s = consumeInt(s, &pval);
       stackPush(stack, &counter, pval);
-    } else {
+    } else if (TOK_OP == tokenType(s)) {
       int op;
       s = consumeOp(s, &op);
       long v1 = stackPop(stack, &counter);
       long v2 = stackPop(stack, &counter);
      
       stackPush(stack, &counter, evalOp(op, v2, v1));
+    } else {
+      free(stack);
+      fatalError("invalid char");
     }
+    s = skipws(s);
   }
   if (counter != 1) {
     free(stack);

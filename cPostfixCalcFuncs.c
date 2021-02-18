@@ -116,8 +116,7 @@ int tokenType(const char *s) {
   char *n = (char *) calloc(i, sizeof(char) + 1);
   memcpy(n, s, i);
 
-  if(strcmp(n, "+") == 0 || strcmp(n, "-") == 0 
-  || strcmp(n, "*") == 0 || strcmp(n, "/") == 0) {
+  if (n[0] == '+' || n[0] == '-' || n[0] == '*' || n[0] == '/') {
     free(n);
     return TOK_OP;
   } else if(digit == 1) {
@@ -247,7 +246,7 @@ long evalOp(int op, long left, long right) {
     case '+': return left + right; break;
     case '-': return left - right; break;
     case '*': return left * right; break;
-    default: return left / right; break;
+  default: return left / right; break;
   }
 
   //return 0UL;
