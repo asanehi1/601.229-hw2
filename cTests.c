@@ -206,6 +206,12 @@ void testConsumeInt(TestObjs *objs) {
 	ASSERT(2L == val);
 	ASSERT(0 == strcmp(" 456 -", consumeInt("123 456 -", &val)));
 	ASSERT(123L == val);
+	ASSERT(0 == strcmp(" ", consumeInt("123 ", &val)));
+	ASSERT(123L == val);
+	ASSERT(0 == strcmp("a 456 -", consumeInt("123a 456 -", &val)));
+	ASSERT(123L == val);
+	ASSERT(0 == strcmp(" 456 -", consumeInt("12345678901237920 456 -", &val)));
+	ASSERT(12345678901237920L == val);
 }
 
 void testConsumeOp(TestObjs *objs) {

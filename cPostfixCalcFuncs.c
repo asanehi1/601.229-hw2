@@ -145,13 +145,14 @@ int tokenType(const char *s) {
 const char *consumeInt(const char *s, long *pval) {
   /* TODO: implement */
   int i = 0;
-  while(i < (int)strlen(s) && 1 != isSpace(s[i])) {
+  while(i < (int)strlen(s) && 1 == isDigit(s[i])) {
     i++;
   }
 
   char *num = (char *) calloc(i + 1, sizeof(char));
   memcpy(num, s, i);
-  *pval = (long)atoi(num);
+
+  *pval = (long)strtol(num, NULL, 10);
   free(num);
   return (s + i);
 }
@@ -194,12 +195,10 @@ void stackPush(long stack[], long *count, long val) {
   /* TODO: implement */
   if (*count == MAX_STACK) {
     fatalError("Stack is full, cannot push!");
-  } else {
-    //    printf("stacking \n");
-    stack[*count] = val;
-    *count += 1UL;
-  }
+  } 
 
+  stack[*count] = val;
+  *count += 1UL;
 }
 
 /*
@@ -218,15 +217,13 @@ void stackPush(long stack[], long *count, long val) {
  */
 long stackPop(long stack[], long *count) {
   /* TODO: implement */
-  if ( *count == 0UL) {
+  if (*count == 0UL) {
     free(stack);
     fatalError("Stack is empty, cannot pop!");
-  } else {
-    *count -= 1UL;
-    return stack[*count];
-  }
+  } 
 
-  return 0L; //may cause issues later
+  *count -= 1UL;
+  return stack[*count];
 }
 
 /*
@@ -246,8 +243,6 @@ long evalOp(int op, long left, long right) {
     case '+': return left + right; break;
     case '-': return left - right; break;
     case '*': return left * right; break;
-  default: return left / right; break;
+    default: return left / right; break;
   }
-
-  //return 0UL;
 }
