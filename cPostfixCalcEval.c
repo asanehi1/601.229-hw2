@@ -19,7 +19,8 @@ long eval(const char *s) {
   s = skipws(s);
   
   long counter = 0;
-  long *stack = (long *) malloc(sizeof(long) * MAX_STACK);
+  //long *stack = (long *) malloc(sizeof(long) * MAX_STACK);
+  long stack[20];
   while (s && strlen(s) > 0) {
     if (TOK_INT == tokenType(s)) {
       long pval;
@@ -33,17 +34,17 @@ long eval(const char *s) {
      
       stackPush(stack, &counter, evalOp(op, v2, v1));
     } else {
-      free(stack);
+      //free(stack);
       fatalError("invalid char");
     }
     s = skipws(s);
   }
   if (counter != 1) {
-    free(stack);
+    //free(stack);
     fatalError("multiple items on stack");
   } else {
     long final = stackPop(stack, &counter);
-    free(stack);
+    //free(stack);
     return final;
   }
   /* Note: this function should be implemented by calling functions
