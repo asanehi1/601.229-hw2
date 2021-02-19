@@ -318,7 +318,7 @@ void testUnusualWS(TestObjs *objs) {
   ASSERT(6L == eval("  1  \t 5\t\t + \t \t \t \t \t \t                          "));
   ASSERT(7L == eval("  1  \t 5\t\t 1        ++ \t \t \t \t \t \t                          "));
   ASSERT(-5L == eval("  1  \t 5\t\t 1        +- \t \t \t \t \t \t                          "));
-  //ASSERT(2L == (eval("1 1+")));
+  ASSERT(2L == (eval("1 1+")));
   ASSERT(2L == (eval("1 1 1 1 + ** ")));
-  //ASSERT(2L == (eval("1 1 1 1+--")));
+  ASSERT(2L == (eval("1 1 1 1+--")));
 }

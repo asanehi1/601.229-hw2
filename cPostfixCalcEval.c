@@ -22,7 +22,7 @@ long eval(const char *s) {
   //long *stack = (long *) malloc(sizeof(long) * MAX_STACK);
   long stack[20];
   while (s && strlen(s) > 0) {
-    if (TOK_INT == tokenType(s)) {
+    if (isDigit(s[0]) == 1) {
       long pval;
       s = consumeInt(s, &pval);
       stackPush(stack, &counter, pval);
