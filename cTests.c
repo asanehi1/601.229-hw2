@@ -179,7 +179,8 @@ void testIsDigit(TestObjs *objs) {
 }
 
 void testSkipws(TestObjs *objs) {
-	ASSERT(0 == strcmp("abc", skipws("abc")));
+        ASSERT(0 == strcmp("1", skipws("1")));
+        ASSERT(0 == strcmp("abc", skipws("abc")));
 	ASSERT(0 == strcmp("abc", skipws(" abc")));
 	ASSERT(0 == strcmp("abc", skipws("\tabc")));
 	ASSERT(0 == strcmp("abc", skipws("     abc")));

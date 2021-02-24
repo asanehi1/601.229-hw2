@@ -79,7 +79,6 @@ fatalError:
  *   or carriage return, but it's only required to handle
  *   spaces and tabs)
 	*/
-spaceChar:	 .string " "
 	.globl isSpace
 isSpace:
 	/* TODO: implement */
@@ -87,18 +86,18 @@ isSpace:
 
 	mov $' ', %rsi
 	cmpq %rdi, %rsi	
-        je .space
+        je .Lspace
 	
 	movq $'\t, %rsi
         cmpq %rdi, %rsi              
-        je .space
+        je .Lspace
 
 	// else if not space
 	movq $0, %rax
 	addq $8, %rsp
 	ret
 
-	.space:
+	.Lspace:
 	movq $1, %rax
 	addq $8, %rsp
 	ret
@@ -120,24 +119,24 @@ isDigit:
 
         mov $'0', %rsi
         cmpq %rdi, %rsi
-        jle .isItLessThanNine
+        jle .LisItLessThanNine
 	
         // else if smaller than 1 
         movq $0, %rax
         addq $8, %rsp
         ret
 
-        .isItLessThanNine:
+        .LisItLessThanNine:
 	mov $'9', %rsi
         cmpq %rdi, %rsi
-        jge .itIsDigit
+        jge .LitIsDigit
 
 	// else if bigger than 9
         movq $0, %rax
         addq $8, %rsp
         ret
 
-	.itIsDigit:
+	.LitIsDigit:
 	movq $1, %rax
         addq $8, %rsp
         ret
@@ -153,10 +152,32 @@ isDigit:
  *   pointer to the first non-space character in the string, or NULL
  *   if there are no non-space characters before the end of the string
  *   is reached
- */
+	*/
+array:	 .string "%s"
 	.globl skipws
 skipws:
 	/* TODO: implement */
+	subq $8, %rsp
+
+	//push $' '
+
+	//push %rdi
+	mov %rdi, %r10	
+	mov (%r10), %rdi
+	call isSpace
+	//add $4, %rdi
+	mov $1, %ebx
+	cmp %eax, %ebx
+
+	je .Lpass
+
+	.Lloop:
+
+	.Lpass:
+	addq $8, %rsp
+
+	
+	//addq $8, %rsp
 	ret
 
 /*
