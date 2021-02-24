@@ -52,12 +52,19 @@ addPositive:
  *
  * Params:
  *   msg - description of the error which occurred
- */
+	*/
+errorMsg:	 .string "Error: \n"
 	.globl fatalError
 fatalError:
 	/* TODO: implement */
 	/* note that this function should not return */
-	ret
+	subq $8, %rsp
+	movq $errorMsg, %rdi
+	call printf
+	movl $1, %edi
+	addq $8, %rsp
+	syscall
+	//ret
 
 /*
  * isSpace - tests a character code to determine whether or not it
@@ -71,12 +78,30 @@ fatalError:
  *   (the function is allowed to also return 1 if c is a newline
  *   or carriage return, but it's only required to handle
  *   spaces and tabs)
- */
+	*/
+spaceChar:	 .string " "
 	.globl isSpace
 isSpace:
 	/* TODO: implement */
+	subq $8, %rsp                /* align stack pointer */
+
+	mov $' ', %rsi
+	cmpq %rdi, %rsi		/* compare 1st param to ' ' */
+        je .space /* if equal isSpace */
+	movq $'\t, %rsi
+        cmpq %rdi, %rsi              /* compare 2nd param to 0 */
+        je .space
+
+	// else
+	movq $0, %rax
+	addq $8, %rsp
 	ret
 
+	.space:
+	movq $1, %rax
+	addq $8, %rsp
+	ret
+	
 /*
  * isDigit - tests a character code to determine whether it is one
  * of the digits '0' through '9'
@@ -90,6 +115,7 @@ isSpace:
 	.globl isDigit
 isDigit:
 	/* TODO: implement */
+	
 	ret
 
 /*
