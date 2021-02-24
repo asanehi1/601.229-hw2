@@ -88,7 +88,7 @@ isSpace:
 	cmpq %rdi, %rsi	
         je .Lspace
 	
-	movq $'\t, %rsi
+	movq $'\t', %rsi
         cmpq %rdi, %rsi              
         je .Lspace
 
@@ -115,7 +115,7 @@ isSpace:
 	.globl isDigit
 isDigit:
 	/* TODO: implement */
-	        subq $8, %rsp                /* align stack pointer */
+	subq $8, %rsp                /* align stack pointer */
 
         mov $'0', %rsi
         cmpq %rdi, %rsi
@@ -236,6 +236,14 @@ consumeInt:
 	.globl consumeOp
 consumeOp:
 	/* TODO: implement */
+	subq $8, %rsp
+	mov $0, %r11
+	movzbq (%rdi, %r11, 1), %r10
+	mov %r10, (%rsi)
+	//leaq (%rdi, %r11, 1), %rsi // store s[0] in op 
+	add $1, %r11
+	leaq (%rdi, %r11, 1), %rax // point to s[0 + 1]
+	addq $8, %rsp
 	ret
 
 /*
@@ -276,6 +284,10 @@ stackPush:
 	.globl stackPop
 stackPop:
 	/* TODO: implement */
+	// cmp *count to 0
+	// if true, fatal error
+	// else *count --
+	// return stack[*count]
 	ret
 
 /*
