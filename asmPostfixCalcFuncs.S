@@ -153,31 +153,36 @@ isDigit:
  *   if there are no non-space characters before the end of the string
  *   is reached
 	*/
-array:	 .string "%s"
 	.globl skipws
 skipws:
 	/* TODO: implement */
 	subq $8, %rsp
 
-	//push $' '
-
-	//push %rdi
-	mov %rdi, %r10	
-	mov (%r10), %rdi
-	call isSpace
-	//add $4, %rdi
-	mov $1, %ebx
-	cmp %eax, %ebx
-
-	je .Lpass
+	mov $0, %r9 // counter
+	mov %rdi, %r10 //copy valye in rdi into r10	
 
 	.Lloop:
+	movzbq (%r10, %r9, 1), %rdi // copy first byte into rdi
+	cmp $0, %rdi //is Null 
+	je .Lfail
+	
+	push %rdi
+        call isSpace
+	pop %rdi 
+	cmp $0, %eax
+	
+	je .Lpass // if not space
+	add $1, %r9 //counter++
+	jmp .Lloop // if space, loop again
 
 	.Lpass:
 	addq $8, %rsp
+	leaq (%r10, %r9, 1), %rax
+	ret
 
-	
-	//addq $8, %rsp
+	.Lfail:
+	addq $8, %rsp
+	mov $0, %rax // return null
 	ret
 
 /*
