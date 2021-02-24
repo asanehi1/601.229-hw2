@@ -86,13 +86,14 @@ isSpace:
 	subq $8, %rsp                /* align stack pointer */
 
 	mov $' ', %rsi
-	cmpq %rdi, %rsi		/* compare 1st param to ' ' */
-        je .space /* if equal isSpace */
+	cmpq %rdi, %rsi	
+        je .space
+	
 	movq $'\t, %rsi
-        cmpq %rdi, %rsi              /* compare 2nd param to 0 */
+        cmpq %rdi, %rsi              
         je .space
 
-	// else
+	// else if not space
 	movq $0, %rax
 	addq $8, %rsp
 	ret
@@ -115,8 +116,31 @@ isSpace:
 	.globl isDigit
 isDigit:
 	/* TODO: implement */
+	        subq $8, %rsp                /* align stack pointer */
+
+        mov $'0', %rsi
+        cmpq %rdi, %rsi
+        jle .isItLessThanNine
 	
-	ret
+        // else if smaller than 1 
+        movq $0, %rax
+        addq $8, %rsp
+        ret
+
+        .isItLessThanNine:
+	mov $'9', %rsi
+        cmpq %rdi, %rsi
+        jge .itIsDigit
+
+	// else if bigger than 9
+        movq $0, %rax
+        addq $8, %rsp
+        ret
+
+	.itIsDigit:
+	movq $1, %rax
+        addq $8, %rsp
+        ret
 
 /*
  * skipws - skips any whitespace characters (as determined by isSpace)
