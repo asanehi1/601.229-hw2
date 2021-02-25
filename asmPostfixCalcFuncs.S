@@ -201,7 +201,48 @@ skipws:
 	.globl tokenType
 tokenType:
 	/* TODO: implement */
+	subq $8, %rsp
+
+	movq $0, %r9
+	movzbq (%rdi, %r9, 1), %rdi
+
+	
+	push %rdi
+	call isDigit
+	pop %rdi
+	cmp $1, %eax
+	je .Ldigit
+
+	
+        cmp $'+', %rdi
+	je .Lop
+
+	cmp $'-', %rdi
+        je .Lop
+
+	cmp $'*', %rdi
+        je .Lop
+
+	cmp $'/', %rdi
+        je .Lop
+
+	jmp .Lunknown
+
+
+	.Ldigit:
+	movq $TOK_INT, %rax 
+	addq $8, %rsp
 	ret
+
+	.Lop:
+        movq $TOK_OP, %rax
+        addq $8, %rsp
+        ret
+
+	.Lunknown:
+        movq $TOK_UNKNOWN, %rax
+        addq $8, %rsp
+        ret
 
 /*
  * consumeInt - consume one or more digit characters at the beginning
