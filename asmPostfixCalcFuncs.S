@@ -263,7 +263,7 @@ tokenType:
 consumeInt:
 	/* TODO: implement */
 	subq $8, %rsp
-      
+	
 	mov $0, %r11
         mov %rdi, %r10 //copy valye in rdi into r10                                                                              
 
@@ -293,6 +293,7 @@ consumeInt:
         mov %r10, %rax //return pointer to first
 	
 	addq $8, %rsp
+	
 	ret
 
 	
@@ -344,11 +345,17 @@ consumeOp:
 stackPush:
 	/* TODO: implement */
 	subq $8, %rsp
-        cmp $MAX_STACK, %rsi // cmp *count to max stack                                                        
+	movq (%rsi), %r11
+        cmp $MAX_STACK, %r11 // cmp *count to max stack                                                        
         je .Lerror1 // if true, fatal error                                                    
-       
-        //mov %rdx, (%rdi, %rsi, 1)  SEG FAULT help
-	add $1, %rsi // *count ++  
+
+
+	// stack[*count] = val
+	// stack is %rdi, count is %rsi, val is %rdx
+	movq %rdx, (%rdi, %r11, 8)
+	
+        
+	addq $1, (%rsi) // *count ++  
 	
 	addq $8, %rsp
 	ret
@@ -377,11 +384,12 @@ stackPush:
 stackPop:
 	/* TODO: implement */
 	subq $8, %rsp
-	cmp $0, %rsi // cmp *count to 0   
+	cmpq $0, (%rsi) // cmp *count to 0   
 	je .Lerror // if true, fatal error
-	sub $1, %rsi // else *count --
-	movzbq (%rdi, %rsi, 1), %r10
-	movl %r10d, (%rax) // return stack[*count]
+	subq $1, (%rsi) // else *count --
+	movq (%rsi), %r11
+	movzbq (%rdi, %r11, 8), %r10 
+	mov %r10, %rax // return stack[*count]
 	addq $8, %rsp
 	ret
 
@@ -417,28 +425,37 @@ evalOp:
 	je .Ldiv
 
 	.Ladd:
-	add %rsi, %rdx
+	add %rsi, %rdx // add left + right
 	movq %rdx, %rax
 	addq $8, %rsp
 	ret
 
 	.Lsub:
-        sub %rsi, %rdx
-        movq %rdx, %rax
+        sub %rdx, %rsi // sub left - right
+        movq %rsi, %rax
 	addq $8, %rsp
         ret
 
 	.Lmult:
-	//imul %rsi, %rdx, %rax //mismatch
+	imul %rsi, %rdx //mult left * right 
+	mov %rdx, %rax
 	addq $8, %rsp
         ret
 
 	.Ldiv:
-        //div %rsi, %rdx //same issue as mult ?
-        movq %rdx, %rax
+	cmp $0, %rdx
+	je .Lfailed // can't have denominator be 0
+	movq %rsi, %rax
+	mov %rdx, %r11
+	mov $0, %rdx
+        idivq %r11 //divide the contents of %rax by the contents of %r11 
+        //%rax has the quotient of above idiv
 	addq $8, %rsp
         ret
-	
+
+	.Lfailed:
+	addq $8, %rsp
+        mov $0, %rax //return null
 	ret
 
 /* vim:ft=gas:
