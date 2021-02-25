@@ -269,7 +269,7 @@ consumeOp:
 	mov $0, %r11
 	
 	movzbq (%rdi, %r11, 1), %r10 //move s[0] into r10
-	mov %r10, (%rsi) // move r10 to rsi
+	movl %r10d, (%rsi) // move r10 to rsi
 	
 	add $1, %r11
 	leaq (%rdi, %r11, 1), %rax // point to s[0 + 1]
