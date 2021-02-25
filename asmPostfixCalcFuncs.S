@@ -119,8 +119,8 @@ isDigit:
 	/* TODO: implement */
 	subq $8, %rsp                /* align stack pointer */
 
-        mov $'0', %rsi
-        cmpq %rdi, %rsi
+        mov $'0', %r11
+        cmpq %rdi, %r11
         jle .LisItLessThanNine
 	
         // else if smaller than 1 
@@ -129,8 +129,8 @@ isDigit:
         ret
 
         .LisItLessThanNine:
-	mov $'9', %rsi
-        cmpq %rdi, %rsi
+	mov $'9', %r11
+        cmpq %rdi, %r11
         jge .LitIsDigit
 
 	// else if bigger than 9
@@ -263,7 +263,6 @@ tokenType:
 consumeInt:
 	/* TODO: implement */
 	subq $8, %rsp
-
       
 	mov $0, %r11
         mov %rdi, %r10 //copy valye in rdi into r10                                                                              
@@ -271,8 +270,12 @@ consumeInt:
         .Lloop2:
         movzbl (%r10), %eax // copy first byte                                                                  
 	mov %rax, %rdi
-	
+
+	push %rdi
+	push %r11
         call isDigit 
+	pop %r11
+	pop %rdi
 	
         cmp $0, %eax
         je .Lend //if not digit
