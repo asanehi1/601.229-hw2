@@ -262,33 +262,37 @@ tokenType:
 	.globl consumeInt
 consumeInt:
 	/* TODO: implement */
-	 subq $8, %rsp
-        mov $0, %r9 // counter
+	subq $8, %rsp
+
+      
 	mov $0, %r11
         mov %rdi, %r10 //copy valye in rdi into r10                                                                              
 
         .Lloop2:
-        movzbq (%r10, %r9, 1), %rdi // copy first byte into rdi                                                                  
-        push %rdi
-        call isDigit
-	pop %rdi
-
-        //movl %rdi, (%r11, %r9, 1) // move that char into r11, seg faulting rn HELP
-	add $1, %r9 // counter ++   
-	cmp $1, %eax
-        je .Lloop2 //if digit loop again
-
-	sub $1, %r9
-        jmp .Lend  // if not digit                                                                                              
-
+        movzbl (%r10), %eax // copy first byte                                                                  
+	mov %rax, %rdi
+	
+        call isDigit 
+	
+        cmp $0, %eax
+        je .Lend //if not digit
+	
+	imul $10, %r11 // sum = sum * 10
+	subq $'0', %rdi //change from ascii
+	add %rdi, %r11 // sum = sum + nextDigit
+	
+	inc %r10
+	
+        jmp .Lloop2 //if digit loop again
+	
         .Lend:
-        addq $8, %rsp
-	movq %r11, (%rsi)
-        leaq (%r10, %r9, 1), %rax //return pointer to first
+	mov %r11, (%rsi) // move int to pval
+        mov %r10, %rax //return pointer to first
+	
+	addq $8, %rsp
 	ret
 
-    
-        ret
+	
 
 
 /*
