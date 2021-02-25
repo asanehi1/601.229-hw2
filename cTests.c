@@ -226,6 +226,12 @@ void testConsumeOp(TestObjs *objs) {
 	ASSERT('*' == op);
 	ASSERT(0 == strcmp(" 3", consumeOp("/ 3", &op)));
 	ASSERT('/' == op);
+	ASSERT(0 == strcmp("3", consumeOp("/3", &op)));
+        ASSERT('/' == op);
+	ASSERT(0 == strcmp("3 + +", consumeOp("/3 + +", &op)));
+        ASSERT('/' == op);
+	ASSERT(0 == strcmp("+ +", consumeOp("/+ +", &op)));
+        ASSERT('/' == op);
 }
 
 void testPush(TestObjs *objs) {

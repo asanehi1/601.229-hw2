@@ -53,13 +53,15 @@ addPositive:
  * Params:
  *   msg - description of the error which occurred
 	*/
-errorMsg:	 .string "Error: \n"
+errorMsg:	 .string "Error: %s\n"
 	.globl fatalError
 fatalError:
 	/* TODO: implement */
 	/* note that this function should not return */
 	subq $8, %rsp
+	movq %rdi, %rsi
 	movq $errorMsg, %rdi
+	call scanf
 	call printf
 	movl $1, %edi
 	addq $8, %rsp
@@ -219,7 +221,34 @@ tokenType:
 	.globl consumeInt
 consumeInt:
 	/* TODO: implement */
+	 subq $8, %rsp
+        mov $0, %r9 // counter
+	mov $0, %r11
+        mov %rdi, %r10 //copy valye in rdi into r10                                                                              
+
+        .Lloop2:
+        movzbq (%r10, %r9, 1), %rdi // copy first byte into rdi                                                                  
+        push %rdi
+        call isDigit
+	pop %rdi
+
+        //mov %rdi, (%r11, %r9, 1) // move that char into r11, seg faulting rn HELP
+	add $1, %r9 // counter ++   
+	cmp $1, %eax
+        je .Lloop2 //if digit loop again
+
+	sub $1, %r9
+        jmp .Lend  // if not digit                                                                                              
+
+        .Lend:
+        addq $8, %rsp
+	movq %r11, (%rsi)
+        leaq (%r10, %r9, 1), %rax //return pointer to first
 	ret
+
+    
+        ret
+
 
 /*
  * consumeOp - consume an operator character from the beginning of the
@@ -230,7 +259,7 @@ consumeInt:
  *   op - pointer to an int (32 bit signed integer) variable where the
  *        ASCII code of the first character of s should be stored
  *
- * Returns:
+ * Returcns:
  *   a pointer to the second character of s
  */
 	.globl consumeOp
@@ -238,12 +267,13 @@ consumeOp:
 	/* TODO: implement */
 	subq $8, %rsp
 	mov $0, %r11
-	movzbq (%rdi, %r11, 1), %r10
-	mov %r10, (%rsi)
-	//leaq (%rdi, %r11, 1), %rsi // store s[0] in op 
+	
+	movzbq (%rdi, %r11, 1), %r10 //move s[0] into r10
+	mov %r10, (%rsi) // move r10 to rsi
+	
 	add $1, %r11
 	leaq (%rdi, %r11, 1), %rax // point to s[0 + 1]
-	addq $8, %rsp
+	addq $8, %rsp 
 	ret
 
 /*
@@ -284,11 +314,18 @@ stackPush:
 	.globl stackPop
 stackPop:
 	/* TODO: implement */
-	// cmp *count to 0
-	// if true, fatal error
-	// else *count --
-	// return stack[*count]
+	subq $8, %rsp
+	cmp $0, %rsi // cmp *count to 0   
+	je .Lerror // if true, fatal error
+	sub $1, %rsi // else *count --
+	movzbq (%rdi, %rsi, 1), %rax // return stack[*count]
+	addq $8, %rsp
 	ret
+
+	.Lerror:
+	addq $8, %rsp
+	call fatalError
+	ret // i dont think we should reach this
 
 /*
  * evalOp - evaluate a computation by applying an operator to two operands.
