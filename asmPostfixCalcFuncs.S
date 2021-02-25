@@ -273,7 +273,7 @@ consumeInt:
         call isDigit
 	pop %rdi
 
-        //mov %rdi, (%r11, %r9, 1) // move that char into r11, seg faulting rn HELP
+        //movl %rdi, (%r11, %r9, 1) // move that char into r11, seg faulting rn HELP
 	add $1, %r9 // counter ++   
 	cmp $1, %eax
         je .Lloop2 //if digit loop again
@@ -336,6 +336,20 @@ consumeOp:
 	.globl stackPush
 stackPush:
 	/* TODO: implement */
+	subq $8, %rsp
+        cmp $MAX_STACK, %rsi // cmp *count to max stack                                                        
+        je .Lerror1 // if true, fatal error                                                    
+       
+        //mov %rdx, (%rdi, %rsi, 1)  SEG FAULT help
+	add $1, %rsi // *count ++  
+	
+	addq $8, %rsp
+	ret
+
+	.Lerror1:
+        addq $8, %rsp
+	//mov $"Stack is full cannot push", %rdi
+        call fatalError
 	ret
 
 /*
@@ -359,7 +373,8 @@ stackPop:
 	cmp $0, %rsi // cmp *count to 0   
 	je .Lerror // if true, fatal error
 	sub $1, %rsi // else *count --
-	movzbq (%rdi, %rsi, 1), %rax // return stack[*count]
+	movzbq (%rdi, %rsi, 1), %r10
+	movl %r10d, (%rax) // return stack[*count]
 	addq $8, %rsp
 	ret
 
@@ -381,6 +396,42 @@ stackPop:
  */
 	.globl evalOp
 evalOp:
+	subq $8, %rsp
+	cmp $'+', %rdi // if +
+	je .Ladd
+
+	cmp $'-', %rdi // if -                                                                
+	je .Lsub
+
+	cmp $'*', %rdi // if *                                                                
+	je .Lmult
+
+	cmp $'/', %rdi // if /                                                                
+	je .Ldiv
+
+	.Ladd:
+	add %rsi, %rdx
+	movq %rdx, %rax
+	addq $8, %rsp
+	ret
+
+	.Lsub:
+        sub %rsi, %rdx
+        movq %rdx, %rax
+	addq $8, %rsp
+        ret
+
+	.Lmult:
+	//imul %rsi, %rdx, %rax //mismatch
+	addq $8, %rsp
+        ret
+
+	.Ldiv:
+        //div %rsi, %rdx //same issue as mult ?
+        movq %rdx, %rax
+	addq $8, %rsp
+        ret
+	
 	ret
 
 /* vim:ft=gas:
