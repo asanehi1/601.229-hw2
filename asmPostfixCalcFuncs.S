@@ -61,12 +61,13 @@ fatalError:
 	subq $8, %rsp
 	movq %rdi, %rsi
 	movq $errorMsg, %rdi
-	call scanf
+	
 	call printf
-	movl $1, %edi
-	addq $8, %rsp
-	syscall
-	//ret
+
+	movq $1, %rdi /*Arg1: exit status is 0*/
+	addq $8, %rsp    
+	call exit
+
 
 /*
  * isSpace - tests a character code to determine whether or not it
@@ -340,7 +341,8 @@ consumeOp:
  *
  * Returns:
  *   nothing
- */
+	*/
+failedStack:	.string "Stack is full cannot push"
 	.globl stackPush
 stackPush:
 	/* TODO: implement */
@@ -362,7 +364,7 @@ stackPush:
 
 	.Lerror1:
         addq $8, %rsp
-	//mov $"Stack is full cannot push", %rdi
+	movq $failedStack, %rdi
         call fatalError
 	ret
 
@@ -379,7 +381,8 @@ stackPush:
  *
  * Returns:
  *   the value popped from the stack
- */
+	*/
+failedPop:	.string "Stack is empty cannot pop"
 	.globl stackPop
 stackPop:
 	/* TODO: implement */
@@ -395,6 +398,7 @@ stackPop:
 
 	.Lerror:
 	addq $8, %rsp
+	movq $failedPop, %rdi
 	call fatalError
 	ret // i dont think we should reach this
 
