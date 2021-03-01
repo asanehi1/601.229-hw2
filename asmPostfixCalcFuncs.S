@@ -95,7 +95,7 @@ isSpace:
         cmpq %rdi, %rsi              
         je .Lspace
 
-	// else if not space
+	/* else if not space*/
 	movq $0, %rax
 	addq $8, %rsp
 	ret
@@ -124,7 +124,7 @@ isDigit:
         cmpq %rdi, %r11
         jle .LisItLessThanNine
 	
-        // else if smaller than 1 
+        /* else if smaller than 1 */
         movq $0, %rax
         addq $8, %rsp
         ret
@@ -134,7 +134,7 @@ isDigit:
         cmpq %rdi, %r11
         jge .LitIsDigit
 
-	// else if bigger than 9
+	/* else if bigger than 9*/
         movq $0, %rax
         addq $8, %rsp
         ret
@@ -161,12 +161,12 @@ skipws:
 	/* TODO: implement */
 	subq $8, %rsp
 
-	mov $0, %r9 // counter
-	mov %rdi, %r10 //copy valye in rdi into r10	
+	mov $0, %r9 /* counter*/
+	mov %rdi, %r10 /*copy value in rdi into r10	*/
 
 	.Lloop:
-	movzbq (%r10, %r9, 1), %rdi // copy first byte into rdi
-	cmp $0, %rdi //is Null 
+	movzbq (%r10, %r9, 1), %rdi /* copy first byte into rdi*/
+	cmp $0, %rdi /*is Null */
 	je .Lfail
 	
 	push %rdi
@@ -174,9 +174,9 @@ skipws:
 	pop %rdi 
 	cmp $0, %eax
 	
-	je .Lpass // if not space
-	add $1, %r9 //counter++
-	jmp .Lloop // if space, loop again
+	je .Lpass /* if not space*/
+	add $1, %r9 /*counter++*/
+	jmp .Lloop /* if space, loop again*/
 
 	.Lpass:
 	addq $8, %rsp
@@ -185,7 +185,7 @@ skipws:
 
 	.Lfail:
 	addq $8, %rsp
-	mov $0, %rax // return null
+	mov $0, %rax /* return null*/
 	ret
 
 /*
@@ -266,10 +266,10 @@ consumeInt:
 	subq $8, %rsp
 	
 	mov $0, %r11
-        mov %rdi, %r10 //copy valye in rdi into r10                                                                              
+        mov %rdi, %r10 /*copy valye in rdi into r10    */                                                                          
 
         .Lloop2:
-        movzbl (%r10), %eax // copy first byte                                                                  
+        movzbl (%r10), %eax /* copy first byte   */                                                               
 	mov %rax, %rdi
 
 	push %rdi
@@ -279,11 +279,12 @@ consumeInt:
 	pop %rdi
 	
         cmp $0, %eax
-        je .Lend //if not digit
+        je .Lend /*if not digit*/
 	
-	imul $10, %r11 // sum = sum * 10
-	subq $'0', %rdi //change from ascii
-	add %rdi, %r11 // sum = sum + nextDigit
+	imul $10, %r11 /* sum = sum * 10*/
+	subq $'0', %rdi /*change from ascii*/
+	add %rdi, %r11 /* sum = sum + nextDigit*/
+	
 	
 	inc %r10
 	
