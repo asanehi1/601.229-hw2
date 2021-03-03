@@ -29,9 +29,10 @@ main:
 	cmp $2, %rdi
 	jne .LincorrectNumArguments
 
-	movzbq (%rsi, 1, 1), %rdi
+	movq $0, %r9
+	movzbq (%rsi, %r9, 1), %rdi
 	call eval
-	mov %eax, %rsi
+	movq %rax, %rsi
 	movq $calcResult, %rdi
 	call printf
 
@@ -43,7 +44,7 @@ main:
 	movq $errorMsg1, %rdi
 	call printf
 	movq $1, %rax
-	addq $8, %rsp
+	addq $16, %rsp
 	ret
 
 /* vim:ft=gas:

@@ -34,18 +34,15 @@ long eval(const char *s) {
      
       stackPush(stack, &counter, evalOp(op, v2, v1));
     } else {
-      //free(stack);
       fatalError("invalid char");
     }
     s = skipws(s);
   }
   
   if (counter != 1) {
-    //free(stack);
     fatalError("multiple items on stack");
   } else {
     long final = stackPop(stack, &counter);
-    //free(stack);
     return final;
   }
   /* Note: this function should be implemented by calling functions

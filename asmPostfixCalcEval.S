@@ -34,75 +34,78 @@ eval:
 	subq $184, %rsp /*align stack pointer*/
 	movq %rsp, %rbp  /* make %rbp point to local variables area */
 
-	/*(%rbp) stack of 20 8 byte integers
+	/*0(%rbp) stack of 20 8 byte integers
 	160(%rbp) long pval
 	168(%rbp) 4 bytes int op
 	176(%rbp) counter 8 bytes*/
 
+	movq $0, 176(%rbp)
 	call skipws
 	leaq (%rbp), %rdi
 	movq %rax, %r12 /*r12 holds string s*/
 	
 .Levalloop:
-	cmp 0, %r12
+	cmp $0, %r12
 	je .Lout
 
+	/*check if first character is digit*/
 	movq $0, %r8
 	movzbq (%r12, %r8, 1), %rdi
 	call isDigit
 	cmp $1, %rax
 	je .Ldigit
 
+	/*check token type of string */
 	movq %r12, %rdi
 	call tokenType
-	cmp TOK_OP, %rax
+	cmp $TOK_OP, %rax
 	je .LtokenOP
 
+	/*There was an invalid token and it was not a digit*/
 	movq $invalidChar, %rdi
 	call fatalError
 
-.LafterIfStatementsRemoveSpace:
-	movq %r12, %rdi
-	call skipws
-	movq %rax, %r12
-
-	jmp .Levalloop
-
-
 .Ldigit:
+	/*first integer in string is consumed by calling consumeInt*/
 	movq %r12, %rdi
 	leaq 160(%rbp), %rsi
 	call consumeInt
-	movq %rax, %r12 /*first integer in string was consumed*/
+	movq %rax, %r12 
 
+	/*add that consumed integer to the stack*/
 	movq %rbp, %rdi
-	leaq 176(%rbp), %rsi
-	leaq 160(%rbp), %rdx
+	leaq 176(%rbp), %rsi 
+	movq 160(%rbp), %rdx
 	call stackPush
 
 	jmp .LafterIfStatementsRemoveSpace
 
 .LtokenOP:
+	/*consume the operator by calling consumeOp*/
 	movq %r12, %rdi
-	leaq 176(%rbp), %rsi
+	leaq 168(%rbp), %rsi
 	call consumeOp
 	movq %rax, %r12
 	
+	/*Get value at the top of the stack*/
 	movq %rbp, %rdi
 	leaq 176(%rbp), %rsi
 	call stackPop
 	movq %rax, %r8
 
+	/*Get value at the top of the stack*/
 	movq %rbp, %rdi
 	leaq 176(%rbp), %rsi
 	call stackPop
 	movq %rax, %r9
 
-	leaq 168(%rbp), %rdi
+	/*evaluate the two values*/
+	movq 168(%rbp), %rdi
 	movq %r9, %rsi
 	movq %r8, %rdx
 	call evalOp
 
+	/*push the result of the two values on stack*/
 	movq %rbp, %rdi
 	leaq 176(%rbp), %rsi
 	movq %rax, %rdx
@@ -110,17 +113,29 @@ eval:
 
 	jmp .LafterIfStatementsRemoveSpace
 
+.LafterIfStatementsRemoveSpace:
+	/*remove any leading zeros*/
+	movq %r12, %rdi
+	call skipws
+	movq %rax, %r12
+
+	jmp .Levalloop /*jump back to the start of loop*/
+
 .Lout:
+	/*check if wounter equal 1*/
 	leaq 176(%rbp), %rsi
-	cmp %rsi, 1
+	cmp $1, %rsi
 	je .LmultItemInStack
 
 	movq %rbp, %rdi
 	call stackPop
 
+	addq $184, %rsp
+	popq %r13
+	popq %r12
+	popq %rbp
 	ret
 	
-
 .LmultItemInStack:
 	movq $multItemInStack, %rdi
 	call fatalError

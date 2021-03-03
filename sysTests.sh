@@ -46,6 +46,14 @@ expect 42 '6 7 *'
 expect 42 '6 6 6 6 6 6 6 + + + + + +'
 expect_error '2 2'
 expect_error '1 *'
+expect 2 '1 1 +'
+expect 2 '1             1               +'
+expect 110 '20 2 / 10 10 * +'
+expect_error '20 2 / 10 10 * + -'
+expect -20 '1 3 5 2      +*-   '
+expect_error '1 3 5 2      +*-    3 ?'
+expect 1 '1'
+#expect_error '5 0 /'
 # TODO: add more tests...
 
 #######################################################################

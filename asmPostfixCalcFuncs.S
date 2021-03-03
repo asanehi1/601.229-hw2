@@ -349,12 +349,12 @@ stackPush:
 	/* TODO: implement */
 	subq $8, %rsp
 	movq (%rsi), %r11
-        cmp $MAX_STACK, %r11 // cmp *count to max stack                                                        
-        je .Lerror1 // if true, fatal error                                                    
+        cmp $MAX_STACK, %r11 /* cmp *count to max stack*/                                                        
+        je .Lerror1 /* if true, fatal error   */                                                 
 
 
-	// stack[*count] = val
-	// stack is %rdi, count is %rsi, val is %rdx
+	/* stack[*count] = val
+	// stack is %rdi, count is %rsi, val is %rdx*/
 	movq %rdx, (%rdi, %r11, 8)
 	
         
