@@ -39,18 +39,17 @@ eval:
 	168(%rbp) 4 bytes int op
 	176(%rbp) counter 8 bytes*/
 
-	movq $0, 176(%rbp)
 	call skipws
-	leaq (%rbp), %rdi
+	movq $0, 176(%rbp) /*counter initialization*/
 	movq %rax, %r12 /*r12 holds string s*/
 	
 .Levalloop:
-	cmp $0, %r12
+	cmp $0, %r12 /*check if string is empty*/
 	je .Lout
 
 	/*check if first character is digit*/
 	movq $0, %r8
-	movzbq (%r12, %r8, 1), %rdi
+	movsbq (%r12, %r8, 1), %rdi
 	call isDigit
 	cmp $1, %rax
 	je .Ldigit
@@ -72,7 +71,7 @@ eval:
 	call consumeInt
 	movq %rax, %r12 
 
-	/*add that consumed integer to the stack*/
+	/*push that consumed integer to the stack*/
 	movq %rbp, %rdi
 	leaq 176(%rbp), %rsi 
 	movq 160(%rbp), %rdx
@@ -122,14 +121,17 @@ eval:
 	jmp .Levalloop /*jump back to the start of loop*/
 
 .Lout:
-	/*check if wounter equal 1*/
+	/*check if counter equal 1*/
 	leaq 176(%rbp), %rsi
-	cmp $1, %rsi
-	je .LmultItemInStack
+	movq 176(%rbp), %r9
+	cmp $1, %r9
+	jne .LmultItemInStack
 
+	/*counter does equal 1*/
 	movq %rbp, %rdi
 	call stackPop
 
+	movq %rbp, %rsp
 	addq $184, %rsp
 	popq %r13
 	popq %r12

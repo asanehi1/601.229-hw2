@@ -218,7 +218,6 @@ void stackPush(long stack[], long *count, long val) {
 long stackPop(long stack[], long *count) {
   /* TODO: implement */
   if (*count == 0UL) {
-    //free(stack);
     fatalError("Stack is empty, cannot pop!");
   } 
 

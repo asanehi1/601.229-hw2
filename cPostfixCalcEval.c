@@ -38,7 +38,7 @@ long eval(const char *s) {
     }
     s = skipws(s);
   }
-  
+
   if (counter != 1) {
     fatalError("multiple items on stack");
   } else {

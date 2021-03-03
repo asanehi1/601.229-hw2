@@ -24,13 +24,13 @@
 	.globl main
 main:
 	/* TODO: implement */
-
+/*
 	subq $8, %rsp
 	cmp $2, %rdi
 	jne .LincorrectNumArguments
 
 	movq $0, %r9
-	movzbq (%rsi, %r9, 1), %rdi
+	movsbq (%rsi, %r9, 8), %rdi
 	call eval
 	movq %rax, %rsi
 	movq $calcResult, %rdi
@@ -44,8 +44,8 @@ main:
 	movq $errorMsg1, %rdi
 	call printf
 	movq $1, %rax
-	addq $16, %rsp
-	ret
+	addq $8, %rsp
+	ret*/
 
 /* vim:ft=gas:
  */

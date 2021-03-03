@@ -165,7 +165,7 @@ skipws:
 	mov %rdi, %r10 /*copy value in rdi into r10	*/
 
 	.Lloop:
-	movzbq (%r10, %r9, 1), %rdi /* copy first byte into rdi*/
+	movsbq (%r10, %r9, 1), %rdi /* copy first byte into rdi*/
 	cmp $0, %rdi /*is Null */
 	je .Lfail
 	
@@ -205,7 +205,7 @@ tokenType:
 	subq $8, %rsp
 
 	movq $0, %r9
-	movzbq (%rdi, %r9, 1), %rdi
+	movsbq (%rdi, %r9, 1), %rdi
 
 	
 	push %rdi
@@ -319,7 +319,7 @@ consumeOp:
 	subq $8, %rsp
 	mov $0, %r11
 	
-	movzbq (%rdi, %r11, 1), %r10 //move s[0] into r10
+	movsbq (%rdi, %r11, 1), %r10 //move s[0] into r10
 	movl %r10d, (%rsi) // move r10 to rsi
 	
 	add $1, %r11
@@ -392,8 +392,8 @@ stackPop:
 	je .Lerror // if true, fatal error
 	subq $1, (%rsi) // else *count --
 	movq (%rsi), %r11
-	movzbq (%rdi, %r11, 8), %r10 
-	mov %r10, %rax // return stack[*count]
+	movsbq (%rdi, %r11, 8), %r10 
+	movq %r10, %rax // return stack[*count]
 	addq $8, %rsp
 	ret
 
@@ -430,7 +430,7 @@ evalOp:
 	je .Ldiv
 
 	.Ladd:
-	add %rsi, %rdx // add left + right
+	add %rsi, %rdx /* add left + right*/
 	movq %rdx, %rax
 	addq $8, %rsp
 	ret
