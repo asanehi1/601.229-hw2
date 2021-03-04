@@ -76,7 +76,7 @@ eval:
 	movq 160(%rbp), %rdx
 	call stackPush
 
-	jmp .LafterIfStatementsRemoveSpace
+	jmp .LafterIfStatementsRemoveSpace /*jump to end of if statements*/
 
 .LtokenOP:
 	/*consume the operator by calling consumeOp*/
@@ -109,7 +109,7 @@ eval:
 	movq %rax, %rdx
 	call stackPush
 
-	jmp .LafterIfStatementsRemoveSpace
+	jmp .LafterIfStatementsRemoveSpace /*jump to end of if statements*/
 
 .LafterIfStatementsRemoveSpace:
 	/*remove any leading zeros*/
@@ -138,7 +138,6 @@ eval:
 .LmultItemInStack:
 	movq $multItemInStack, %rdi
 	call fatalError
-
 
 /* vim:ft=gas:
  */

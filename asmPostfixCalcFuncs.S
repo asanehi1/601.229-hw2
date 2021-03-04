@@ -93,11 +93,11 @@ isSpace:
 
 	mov $' ', %rsi
 	cmpq %rdi, %rsi	
-        je .Lspace
+    je .Lspace
 	
 	movq $'\t', %rsi
     cmpq %rdi, %rsi              
-        je .Lspace
+    je .Lspace
 
 	/* else if not space*/
 	movq $0, %rax
@@ -219,8 +219,8 @@ tokenType:
 	je .Ldigit
 
 	
-        cmp $'+', %rdi
-	je .Lop
+    cmp $'+', %rdi
+		je .Lop
 
 	cmp $'-', %rdi
         je .Lop
@@ -240,14 +240,14 @@ tokenType:
 	ret
 
 	.Lop:
-        movq $TOK_OP, %rax
-        addq $8, %rsp
-        ret
+	movq $TOK_OP, %rax
+	addq $8, %rsp
+	ret
 
 	.Lunknown:
-        movq $TOK_UNKNOWN, %rax
-        addq $8, %rsp
-        ret
+	movq $TOK_UNKNOWN, %rax
+	addq $8, %rsp
+	ret
 
 /*
  * consumeInt - consume one or more digit characters at the beginning
@@ -270,15 +270,15 @@ consumeInt:
 	subq $8, %rsp
 	
 	mov $0, %r11
-        mov %rdi, %r10 /*copy valye in rdi into r10    */                                                                          
+	mov %rdi, %r10 /*copy valye in rdi into r10    */                                                                          
 
-        .Lloop2:
-        movzbl (%r10), %eax /* copy first byte   */                                                               
+	.Lloop2:
+	movzbl (%r10), %eax /* copy first byte   */                                                               
 	mov %rax, %rdi
 
 	push %rdi
 	push %r11
-        call isDigit 
+    call isDigit 
 	pop %r11
 	pop %rdi
 	
@@ -292,7 +292,7 @@ consumeInt:
 	
 	inc %r10
 	
-    jmp .Lloop2 //if digit loop again
+    jmp .Lloop2 /*if digit loop again*/
 	
     .Lend:
 	mov %r11, (%rsi) /* move int to pval*/
@@ -322,11 +322,11 @@ consumeOp:
 	subq $8, %rsp
 	mov $0, %r11
 	
-	movsbq (%rdi, %r11, 1), %r10 //move s[0] into r10
-	movl %r10d, (%rsi) // move r10 to rsi
+	movsbq (%rdi, %r11, 1), %r10 /*move s[0] into r10*/
+	movl %r10d, (%rsi) /* move r10 to rsi*/
 	
 	add $1, %r11
-	leaq (%rdi, %r11, 1), %rax // point to s[0 + 1]
+	leaq (%rdi, %r11, 1), %rax /* point to s[0 + 1]*/
 	addq $8, %rsp 
 	ret
 
@@ -354,19 +354,15 @@ stackPush:
 	cmp $MAX_STACK, %r11 /* cmp *count to max stack*/                                                        
 	je .Lerror1 /* if true, fatal error   */                                                 
 
-
 	/* stack[*count] = val
 	// stack is %rdi, count is %rsi, val is %rdx*/
 	movq %rdx, (%rdi, %r11, 8)
-	
-        
 	addq $1, (%rsi) /* *count ++  */
-	
 	addq $8, %rsp
 	ret
 
 	.Lerror1:
-        /*addq $8, %rsp*/
+    /*addq $8, %rsp*/
 	movq $failedStack, %rdi
     call fatalError
 	ret
@@ -389,12 +385,12 @@ stackPush:
 stackPop:
 	/* TODO: implement */
 	subq $8, %rsp
-	cmpq $0, (%rsi) // cmp *count to 0   
-	je .Lerror // if true, fatal error
-	subq $1, (%rsi) // else *count --
+	cmpq $0, (%rsi) /* cmp *count to 0   */
+	je .Lerror /* if true, fatal error*/
+	subq $1, (%rsi) /* else *count --*/
 	movq (%rsi), %r11
 	movq (%rdi, %r11, 8), %r10 
-	movq %r10, %rax // return stack[*count]
+	movq %r10, %rax /* return stack[*count]*/
 	addq $8, %rsp
 	ret
 
@@ -437,34 +433,31 @@ evalOp:
 	ret
 
 	.Lsub:
-        sub %rdx, %rsi /* sub left - right*/
-        movq %rsi, %rax
+	sub %rdx, %rsi /* sub left - right*/
+	movq %rsi, %rax
 	addq $8, %rsp
-        ret
+	ret
 
 	.Lmult:
 	imul %rsi, %rdx /*mult left * right*/ 
-	mov %rdx, %rax
+	movq %rdx, %rax
 	addq $8, %rsp
-        ret
+	ret
 
 	.Ldiv:
 	cmp $0, %rdx
 	je .Lfailed /* can't have denominator be 0 */
 	movq %rsi, %rax
-	mov %rdx, %r11
-	mov $0, %rdx
-        idivq %r11 /*divide the contents of %rax by the contents of %r11 */
+	movq %rdx, %r11
+	cqto
+    idivq %r11 /*divide the contents of %rax by the contents of %r11 */
         /*%rax has the quotient of above idiv*/
 	addq $8, %rsp
-        ret
+    ret
 
 	.Lfailed:
-	/*addq $8, %rsp*/
 	mov $divisionbyzero, %rdi
 	call fatalError
-        /*mov $0, %rax //return null
-	ret*/
 
 /* vim:ft=gas:
  */
