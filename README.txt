@@ -8,3 +8,6 @@ isSpace, isDigit, *skipws, valgrind issues, eval, edge cases, addPositive, fatal
 
 Alexis Sanehisa's contributions M2:
 everything (Maudeline is busy, she'll do more work for M3)
+
+Maudeline Deus's contributions M3:
+everything

@@ -12,6 +12,10 @@
 	.section .rodata
 
 eNegativeValue: .string "Negative value"
+failedStack:	.string "Stack is full cannot push"
+errorMsg:	 .string "Error: %s\n"
+failedPop:	.string "Stack is empty cannot pop"
+divisionbyzero: .string "Cannot divide by 0"
 
 /* TODO: add other string constants and other read-only data here */
 
@@ -53,7 +57,7 @@ addPositive:
  * Params:
  *   msg - description of the error which occurred
 	*/
-errorMsg:	 .string "Error: %s\n"
+
 	.globl fatalError
 fatalError:
 	/* TODO: implement */
@@ -65,7 +69,7 @@ fatalError:
 	call printf
 
 	movq $1, %rdi /*Arg1: exit status is 0*/
-	addq $8, %rsp    
+	/*addq $8, %rsp */   
 	call exit
 
 
@@ -92,7 +96,7 @@ isSpace:
         je .Lspace
 	
 	movq $'\t', %rsi
-        cmpq %rdi, %rsi              
+    cmpq %rdi, %rsi              
         je .Lspace
 
 	/* else if not space*/
@@ -120,29 +124,29 @@ isDigit:
 	/* TODO: implement */
 	subq $8, %rsp                /* align stack pointer */
 
-        mov $'0', %r11
-        cmpq %rdi, %r11
-        jle .LisItLessThanNine
-	
-        /* else if smaller than 1 */
-        movq $0, %rax
-        addq $8, %rsp
-        ret
+	mov $'0', %r11
+	cmpq %rdi, %r11
+	jle .LisItLessThanNine
 
-        .LisItLessThanNine:
+	/* else if smaller than 1 */
+	movq $0, %rax
+	addq $8, %rsp
+	ret
+
+    .LisItLessThanNine:
 	mov $'9', %r11
-        cmpq %rdi, %r11
-        jge .LitIsDigit
+	cmpq %rdi, %r11
+	jge .LitIsDigit
 
 	/* else if bigger than 9*/
-        movq $0, %rax
-        addq $8, %rsp
-        ret
+	movq $0, %rax
+	addq $8, %rsp
+	ret
 
 	.LitIsDigit:
 	movq $1, %rax
-        addq $8, %rsp
-        ret
+	addq $8, %rsp
+	ret
 
 /*
  * skipws - skips any whitespace characters (as determined by isSpace)
@@ -278,8 +282,8 @@ consumeInt:
 	pop %r11
 	pop %rdi
 	
-        cmp $0, %eax
-        je .Lend /*if not digit*/
+	cmp $0, %eax
+	je .Lend /*if not digit*/
 	
 	imul $10, %r11 /* sum = sum * 10*/
 	subq $'0', %rdi /*change from ascii*/
@@ -288,12 +292,11 @@ consumeInt:
 	
 	inc %r10
 	
-        jmp .Lloop2 //if digit loop again
+    jmp .Lloop2 //if digit loop again
 	
-        .Lend:
-	mov %r11, (%rsi) // move int to pval
-        mov %r10, %rax //return pointer to first
-	
+    .Lend:
+	mov %r11, (%rsi) /* move int to pval*/
+	mov %r10, %rax /*return pointer to first*/
 	addq $8, %rsp
 	
 	ret
@@ -343,14 +346,13 @@ consumeOp:
  * Returns:
  *   nothing
 	*/
-failedStack:	.string "Stack is full cannot push"
 	.globl stackPush
 stackPush:
 	/* TODO: implement */
 	subq $8, %rsp
 	movq (%rsi), %r11
-        cmp $MAX_STACK, %r11 /* cmp *count to max stack*/                                                        
-        je .Lerror1 /* if true, fatal error   */                                                 
+	cmp $MAX_STACK, %r11 /* cmp *count to max stack*/                                                        
+	je .Lerror1 /* if true, fatal error   */                                                 
 
 
 	/* stack[*count] = val
@@ -358,15 +360,15 @@ stackPush:
 	movq %rdx, (%rdi, %r11, 8)
 	
         
-	addq $1, (%rsi) // *count ++  
+	addq $1, (%rsi) /* *count ++  */
 	
 	addq $8, %rsp
 	ret
 
 	.Lerror1:
-        addq $8, %rsp
+        /*addq $8, %rsp*/
 	movq $failedStack, %rdi
-        call fatalError
+    call fatalError
 	ret
 
 /*
@@ -383,7 +385,6 @@ stackPush:
  * Returns:
  *   the value popped from the stack
 	*/
-failedPop:	.string "Stack is empty cannot pop"
 	.globl stackPop
 stackPop:
 	/* TODO: implement */
@@ -392,16 +393,16 @@ stackPop:
 	je .Lerror // if true, fatal error
 	subq $1, (%rsi) // else *count --
 	movq (%rsi), %r11
-	movsbq (%rdi, %r11, 8), %r10 
+	movq (%rdi, %r11, 8), %r10 
 	movq %r10, %rax // return stack[*count]
 	addq $8, %rsp
 	ret
 
 	.Lerror:
-	addq $8, %rsp
+	/*addq $8, %rsp*/
 	movq $failedPop, %rdi
 	call fatalError
-	ret // i dont think we should reach this
+	ret /* i dont think we should reach this*/
 
 /*
  * evalOp - evaluate a computation by applying an operator to two operands.
@@ -417,16 +418,16 @@ stackPop:
 	.globl evalOp
 evalOp:
 	subq $8, %rsp
-	cmp $'+', %rdi // if +
+	cmp $'+', %rdi /* if +*/
 	je .Ladd
 
-	cmp $'-', %rdi // if -                                                                
+	cmp $'-', %rdi /* if -  */                                                              
 	je .Lsub
 
-	cmp $'*', %rdi // if *                                                                
+	cmp $'*', %rdi /* if * */                                                               
 	je .Lmult
 
-	cmp $'/', %rdi // if /                                                                
+	cmp $'/', %rdi /* if /   */                                                             
 	je .Ldiv
 
 	.Ladd:
@@ -436,32 +437,34 @@ evalOp:
 	ret
 
 	.Lsub:
-        sub %rdx, %rsi // sub left - right
+        sub %rdx, %rsi /* sub left - right*/
         movq %rsi, %rax
 	addq $8, %rsp
         ret
 
 	.Lmult:
-	imul %rsi, %rdx //mult left * right 
+	imul %rsi, %rdx /*mult left * right*/ 
 	mov %rdx, %rax
 	addq $8, %rsp
         ret
 
 	.Ldiv:
 	cmp $0, %rdx
-	je .Lfailed // can't have denominator be 0
+	je .Lfailed /* can't have denominator be 0 */
 	movq %rsi, %rax
 	mov %rdx, %r11
 	mov $0, %rdx
-        idivq %r11 //divide the contents of %rax by the contents of %r11 
-        //%rax has the quotient of above idiv
+        idivq %r11 /*divide the contents of %rax by the contents of %r11 */
+        /*%rax has the quotient of above idiv*/
 	addq $8, %rsp
         ret
 
 	.Lfailed:
-	addq $8, %rsp
-        mov $0, %rax //return null
-	ret
+	/*addq $8, %rsp*/
+	mov $divisionbyzero, %rdi
+	call fatalError
+        /*mov $0, %rax //return null
+	ret*/
 
 /* vim:ft=gas:
  */

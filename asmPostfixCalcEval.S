@@ -30,7 +30,6 @@ eval:
 	/* TODO: implement */
 	pushq %rbp 
 	pushq %r12
-	pushq %r13
 	subq $184, %rsp /*align stack pointer*/
 	movq %rsp, %rbp  /* make %rbp point to local variables area */
 
@@ -65,7 +64,7 @@ eval:
 	call fatalError
 
 .Ldigit:
-	/*first integer in string is consumed by calling consumeInt*/
+	/*first integer in string is consumed*/
 	movq %r12, %rdi
 	leaq 160(%rbp), %rsi
 	call consumeInt
@@ -99,7 +98,7 @@ eval:
 	movq %rax, %r9
 
 	/*evaluate the two values*/
-	movq 168(%rbp), %rdi
+	movl 168(%rbp), %edi
 	movq %r9, %rsi
 	movq %r8, %rdx
 	call evalOp
@@ -121,19 +120,17 @@ eval:
 	jmp .Levalloop /*jump back to the start of loop*/
 
 .Lout:
-	/*check if counter equal 1*/
+	/*check if theres only 1 value left in stack*/
 	leaq 176(%rbp), %rsi
-	movq 176(%rbp), %r9
-	cmp $1, %r9
-	jne .LmultItemInStack
+	cmp $1, (%rsi)
+	jne .LmultItemInStack /*theres more than 1 or 0 values left*/
 
-	/*counter does equal 1*/
+	/*there is only 1 value left*/
 	movq %rbp, %rdi
 	call stackPop
 
 	movq %rbp, %rsp
 	addq $184, %rsp
-	popq %r13
 	popq %r12
 	popq %rbp
 	ret

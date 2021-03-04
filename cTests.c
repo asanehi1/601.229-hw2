@@ -299,7 +299,7 @@ void testEval(TestObjs *objs) {
 
 void testEvalInvalid(TestObjs *objs) {
 	expectedExit = 1;
-
+	//eval("?");
 	/* multiple items left on stack */
 	if (sigsetjmp(exitBuf, 1) == 0) {
 		eval("2 2");

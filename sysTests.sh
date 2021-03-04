@@ -53,7 +53,13 @@ expect_error '20 2 / 10 10 * + -'
 expect -20 '1 3 5 2      +*-   '
 expect_error '1 3 5 2      +*-    3 ?'
 expect 1 '1'
-#expect_error '5 0 /'
+expect_error '?'
+expect_error '+'
+expect_error '1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1'
+expect 20 '1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 +++++++++++++++++++'
+expect_error '1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1'
+expect_error ' a + 1'
+expect_error '5 0 /'
 # TODO: add more tests...
 
 #######################################################################

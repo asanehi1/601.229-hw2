@@ -6,7 +6,7 @@
 .section .rodata
 
 /* TODO: add string constants and other read-only data here */
-	errorMsg1: .string "Wrong number of arguments\n"
+	incorrectNumArgs: .string "Wrong number of arguments\n"
 	calcResult: .string "Result is: %ld\n"
 
 .section .text
@@ -24,16 +24,16 @@
 	.globl main
 main:
 	/* TODO: implement */
-/*
-	subq $8, %rsp
-	cmp $2, %rdi
-	jne .LincorrectNumArguments
 
-	movq $0, %r9
-	movsbq (%rsi, %r9, 8), %rdi
+	subq $8, %rsp /*stack alignment*/
+	cmp $2, %rdi /*check if there are 2 arguments passed*/
+	jne .LincorrectNumArguments /*jump if its not 2*/
+
+	movq $1, %r9
+	movq (%rsi, %r9, 8), %rdi /*move argv[1] into the rdi register*/
 	call eval
 	movq %rax, %rsi
-	movq $calcResult, %rdi
+	movq $calcResult, %rdi /*move result into rdi register then print it*/
 	call printf
 
 	movq $0, %rax
@@ -41,11 +41,12 @@ main:
 	ret
 
 .LincorrectNumArguments:
-	movq $errorMsg1, %rdi
+	/*pring error message*/
+	movq $incorrectNumArgs, %rdi
 	call printf
 	movq $1, %rax
 	addq $8, %rsp
-	ret*/
+	ret
 
 /* vim:ft=gas:
  */
